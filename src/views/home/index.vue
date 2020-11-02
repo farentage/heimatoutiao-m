@@ -15,7 +15,7 @@
          </template>
       </van-nav-bar>
       <!-- tab频道切换 -->
-      <van-tabs swipeable>
+      <van-tabs swipeable v-model="active">
         <!-- 频道 -->
         <van-tab :title="item.name" v-for="item in labelData" :key="item.id">
            <!-- 文章列表 -->
@@ -28,29 +28,48 @@
         </div>
 
       </van-tabs>
+      <!-- 频道编辑弹出层 -->
+      <van-popup
+        v-model="showPopup"
+        closeable
+        position="bottom"
+        close-icon-position="top-left"
+        :style="{ height: '100%' }"
+      >
+        <channel-edit :my-channel="labelData" :active="active" @channel-jump="onchannelJump">  </channel-edit>
+
+      </van-popup>
   </div>
 </template>
 <script>
 import { getpindao } from '@/api'
 import ArticleList from './components/article-list'
+import ChannelEdit from './components/channel-edit'
 export default {
   data () {
     return {
       //  tab切换标签数据
+      active: 0,
       labelData: [],
-      refreshing: false
+      refreshing: false,
+      showPopup: false // 控制编辑弹出层
     }
   },
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   created () {
     this.getlabelData()
   },
   methods: {
+    onchannelJump (i) {
+      this.active = i
+      this.showPopup = false
+    },
     // 弹出频道编辑
     channelEditor () {
-
+      this.showPopup = true
     },
     onRefresh () {
       setTimeout(() => {
